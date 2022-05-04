@@ -20,7 +20,6 @@ function filterIMGAdressArray(dom, amount) {
   for (let i = 0; i < amount; i++) {
     adressArray.push(imgCollection[i].src);
   }
-  console.log(adressArray);
   return adressArray;
 }
 
@@ -50,14 +49,17 @@ function saveIMG(adressList) {
       method: 'GET',
       outputPath: './memes/0' + count + '.jpg',
     };
-    console.log(imgOptions);
 
     https
       .request(imgOptions, (response) => {
         const chunks = [];
 
-        console.log(response.statusCode);
-        console.log(response.href);
+        console.log(
+          'Received response with Status Code ' +
+            response.statusCode +
+            ' for picture ' +
+            imgOptions.outputPath.slice(8),
+        );
 
         response.on('error', (error) => {
           console.log(error);
@@ -73,7 +75,7 @@ function saveIMG(adressList) {
             if (error) {
               throw error;
             } else {
-              console.log('saved something...');
+              console.log('Saving picture ' + imgOptions.outputPath.slice(8));
             }
           });
         });
@@ -92,7 +94,6 @@ https
     });
 
     response.on('end', () => {
-      console.log(rawData);
       const dom = setupDOM(rawData);
       const imgAdresses = filterIMGAdressArray(dom, options.imgAmount);
       saveIMG(imgAdresses);
