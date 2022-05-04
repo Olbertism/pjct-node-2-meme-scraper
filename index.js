@@ -85,18 +85,46 @@ function saveIMG(adressList) {
   }
 }
 
-https
-  .request(options, (response) => {
-    let rawData = '';
+function generateMeme(templates, id, text) {
+  if (templates.some((entry) => entry.id === id)) {
+    console.log('Meme template exists....');
+  } else {
+    console.log('Meme template does not exist, aborting...');
+    return;
+  }
+}
 
-    response.on('data', (chunk) => {
-      rawData += chunk;
-    });
+if (process.argv[2]) {
+  console.log('Generating custom meme...');
+  const templatesURL = 'https://api.memegen.link/templates';
+  https
+    .request(templatesURL, (response) => {
+      let rawData = '';
 
-    response.on('end', () => {
-      const dom = setupDOM(rawData);
-      const imgAdresses = filterIMGAdressArray(dom, options.imgAmount);
-      saveIMG(imgAdresses);
-    });
-  })
-  .end();
+      response.on('data', (chunk) => {
+        rawData += chunk;
+      });
+
+      response.on('end', () => {
+        const templates = JSON.parse(rawData);
+        generateMeme(templates, process.argv[2], process.argv[3]);
+      });
+    })
+    .end();
+} else {
+  https
+    .request(options, (response) => {
+      let rawData = '';
+
+      response.on('data', (chunk) => {
+        rawData += chunk;
+      });
+
+      response.on('end', () => {
+        const dom = setupDOM(rawData);
+        const imgAdresses = filterIMGAdressArray(dom, options.imgAmount);
+        saveIMG(imgAdresses);
+      });
+    })
+    .end();
+}
