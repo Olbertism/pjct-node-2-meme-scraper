@@ -8,6 +8,8 @@ CLI program to generate and download memes including batch download of existing 
 $ node index.js
 ```
 
+Scrapes the first 10 pictures from a shady website and saves them into "meme" folder in your project directory.
+
 ```
 $ node index.js id text-upper text-lower
 ```
