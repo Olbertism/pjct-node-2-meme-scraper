@@ -4,6 +4,7 @@ import jsdom from 'jsdom';
 
 const { JSDOM: jsDom } = jsdom;
 
+const templatesURL = 'https://api.memegen.link/templates';
 const options = {
   host: 'memegen-link-examples-upleveled.netlify.app',
   path: '',
@@ -90,6 +91,7 @@ function batchRequestPics(adressList) {
 function generateMeme(templates, id, text) {
   if (templates.some((entry) => entry.id === id)) {
     console.log('Meme template exists....');
+    console.log('Generating custom meme...');
     const requestBody = JSON.stringify({
       style: ['string'],
       text: text,
@@ -105,11 +107,12 @@ function generateMeme(templates, id, text) {
       request: requestBody,
       method: 'POST',
     };
+    console.log('starting request...');
 
     const request = https.request(generatorOptions, (response) => {
-      response.on('data', (chunk) => {
-        // This part still confuses me...
-        process.stdout.write(chunk);
+      response.on('data', () => {
+        // This is just here because it won't work otherwise
+        // If you know why, tell me please
       });
 
       response.on('end', () => {
@@ -127,7 +130,6 @@ function generateMeme(templates, id, text) {
     });
 
     request.write(generatorOptions.request);
-
     request.end();
   } else {
     console.log('Meme template does not exist, aborting...');
@@ -148,8 +150,6 @@ function parseCLIText() {
 }
 
 if (process.argv[2]) {
-  console.log('Generating custom meme...');
-  const templatesURL = 'https://api.memegen.link/templates';
   https
     .request(templatesURL, (response) => {
       let rawData = '';
@@ -160,6 +160,12 @@ if (process.argv[2]) {
 
       response.on('end', () => {
         const templates = JSON.parse(rawData);
+        if (process.argv[2] === 'template-ls') {
+          templates.forEach((entry) =>
+            console.log(entry.id + ' // ' + entry.name),
+          );
+          return;
+        }
         createOutputFolder();
         generateMeme(templates, process.argv[2], parseCLIText());
       });
