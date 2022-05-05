@@ -1,8 +1,8 @@
-import * as https from 'https';
-import * as fs from 'fs';
-import * as jsdom from 'jsdom';
+import https from 'node:https';
+import fs from 'node:fs';
+import jsdom from 'jsdom';
 
-const { JSDOM } = jsdom;
+const { JSDOM: jsDom } = jsdom;
 
 const options = {
   host: 'memegen-link-examples-upleveled.netlify.app',
@@ -11,7 +11,7 @@ const options = {
 };
 
 function setupDOM(stringData) {
-  return new JSDOM(stringData);
+  return new jsDom(stringData);
 }
 
 function filterIMGAdressArray(dom, amount) {
